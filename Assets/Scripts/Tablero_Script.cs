@@ -9,8 +9,6 @@ public class Tablero_Script : MonoBehaviour
     public GameObject FBlancaPrefab;
     public GameObject FNegraPregab;
     private Vector2 mouseOver;
-
-
     private bool TurnoBlanco;
 
     private Vector2 OffsetRaycast = new Vector2(0.510f, 0.510f);
