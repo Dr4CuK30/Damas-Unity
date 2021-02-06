@@ -9,13 +9,11 @@ public class Tablero_Script : MonoBehaviour
     public GameObject FBlancaPrefab;
     public GameObject FNegraPregab;
     private Vector2 mouseOver;
-    private bool TurnoBlanco;
-
+    public bool TurnoBlanco;
     private Vector2 OffsetRaycast = new Vector2(0.510f, 0.510f);
 
     private Vector2 PInicial;
     private Vector2 PFinal;
-
     private Ficha FichaSelec;
 
     private void Start()
@@ -44,6 +42,12 @@ public class Tablero_Script : MonoBehaviour
         {
             DesplazarFicha((int)PInicial.x,(int)PInicial.y,x,y);
         }
+    }
+
+    //Metodo para mover la camara
+    private void LateUpdate()
+    {
+        
     }
 
     private void UpdateMousePos()
@@ -113,6 +117,7 @@ public class Tablero_Script : MonoBehaviour
     public void PosicionarFicha(Ficha ficha, int x, int y)
     {
         ficha.transform.position = (Vector3.right * x) + (Vector3.forward * y);
+        Debug.Log((Vector3.right * x) + (Vector3.forward * y));
     }
 
     public void SeleccionarFicha(int x, int y)
@@ -227,6 +232,7 @@ public class Tablero_Script : MonoBehaviour
     {
         FichaSelec = null;
         PInicial = Vector2.zero;
+        Debug.Log(TurnoBlanco.ToString() + " ola");
         if (TurnoBlanco)
         {
             TurnoBlanco = false;
