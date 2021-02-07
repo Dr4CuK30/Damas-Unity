@@ -142,9 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FBlancaPrefab: {fileID: 1394539701257498, guid: 74d0e4d5c5a534d2086a79c6ae356f1b, type: 3}
   FNegraPregab: {fileID: 1160950825322638, guid: 1de520cbfb3bd4beeb18814b3e7a9422, type: 3}
-  views: []
-  currentView: {fileID: 931801762}
-  transitionSpeed: 0
+  TurnoBlanco: 0
 --- !u!1 &697131194
 GameObject:
   m_ObjectHideFlags: 0
@@ -375,16 +373,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2697e54753dd734495d6e806eee6a0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a01ad5c724fde347af8e9ec1cff5cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FBlancaPrefab: {fileID: 0}
-  FNegraPregab: {fileID: 0}
   views:
   - {fileID: 931801762}
   - {fileID: 1236492441}
-  currentView: {fileID: 931801762}
-  transitionSpeed: 2
+  currentView: {fileID: 0}
+  transitionSpeed: 4
+  tablero: {fileID: 649210671}
 --- !u!1001 &1037027273
 PrefabInstance:
   m_ObjectHideFlags: 0
