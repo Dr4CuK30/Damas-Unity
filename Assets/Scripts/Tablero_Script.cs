@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Tablero_Script : MonoBehaviour
 {
     public Ficha[,] fichas = new Ficha[8,8];
-
     public GameObject FBlancaPrefab;
     public GameObject FNegraPregab;
     private Vector2 mouseOver;
@@ -17,39 +17,42 @@ public class Tablero_Script : MonoBehaviour
     private Ficha FichaSelec;
     private bool haMatado;
     private bool puedeVolverAMatar;
+    
+    public Text contadorTiempo;
+    private float segundos;
+    private int minutos;
+    private bool movimientoBloqueado;
 
     private void Start()
     {
+        movimientoBloqueado = false;
+        segundos = 0.0f;
+        minutos = 0;
         TurnoBlanco = true;
-        GenerarTablero();
+        GenerarTablero(); 
     }
 
     private void Update()
     {
+        contadorUpdate();
         UpdateMousePos();
         int x = (int)mouseOver.x;
         int y = (int)mouseOver.y;
 
-        if(FichaSelec!=null)
+        if(FichaSelec!=null && movimientoBloqueado == false)
         {
             UpdateAgarreFicha(FichaSelec);
         }
 
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && movimientoBloqueado == false)
         {
             SeleccionarFicha(x, y);
         }
 
-        if(Input.GetMouseButtonUp(0))
+        if(Input.GetMouseButtonUp(0) && movimientoBloqueado == false)
         {
             DesplazarFicha((int)PInicial.x,(int)PInicial.y,x,y);
         }
-    }
-
-    //Metodo para mover la camara
-    private void LateUpdate()
-    {
-        
     }
 
     private void UpdateMousePos()
@@ -209,7 +212,7 @@ public class Tablero_Script : MonoBehaviour
                 PInicial = Vector2.zero;
                 if (!haMatado || (haMatado && !puedeVolverAMatar))
                 {
-                    TerminarTurno();
+                    StartCoroutine(TerminarTurnoDelay());
                 }
 
             }
@@ -318,5 +321,25 @@ public class Tablero_Script : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void contadorUpdate()
+    {
+        segundos += Time.deltaTime;
+        if (segundos >= 60)
+        {
+            minutos++;
+            segundos = 0.0f;
+        }
+        contadorTiempo.text = "Tiempo: " + minutos.ToString("00") + ":" + segundos.ToString("00");
+    }
+
+    public IEnumerator TerminarTurnoDelay()
+    {
+        movimientoBloqueado = true;
+        yield return new WaitForSeconds(1);
+        TerminarTurno();
+        yield return new WaitForSeconds(1);
+        movimientoBloqueado = false;
     }
 }
