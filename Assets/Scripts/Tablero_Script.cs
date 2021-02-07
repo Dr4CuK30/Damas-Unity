@@ -133,8 +133,11 @@ public class Tablero_Script : MonoBehaviour
         Ficha ficha = fichas[x, y];
         if(ficha!=null)
         {
-            FichaSelec = ficha;
-            PInicial = mouseOver;
+            if((ficha.FBlanca && TurnoBlanco) || (!ficha.FBlanca && !TurnoBlanco))
+            {
+                FichaSelec = ficha;
+                PInicial = mouseOver;
+            }
             //Debug.Log("Ficha Seleccionada:" + "("+x+","+y+")");
         }
     }
