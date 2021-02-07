@@ -15,6 +15,8 @@ public class Tablero_Script : MonoBehaviour
     private Vector2 PInicial;
     private Vector2 PFinal;
     private Ficha FichaSelec;
+    private bool haMatado;
+    private bool puedeVolverAMatar;
 
     private void Start()
     {
@@ -144,6 +146,8 @@ public class Tablero_Script : MonoBehaviour
 
     public void DesplazarFicha(int PIniX, int PIniY, int PFinX, int PFinY)
     {
+        haMatado = false;
+        puedeVolverAMatar = false;
         PInicial = new Vector2(PIniX, PIniY);
         PFinal = new Vector2(PFinX,PFinY);
         //FichaSelec = fichas[PIniX,PIniY];
@@ -182,6 +186,8 @@ public class Tablero_Script : MonoBehaviour
                 //(Siendo un salto de dos posiciones)
                 if(Mathf.Abs(PFinX - PIniX)==2)
                 {
+                    haMatado = true;
+                    ComprobarSiMataAgain(PFinX,PFinY);
                     Ficha ficha = fichas[(PIniX + PFinX)/2, (PIniY+ PFinY)/2];
                     //Destrucción de la pieza si no es nula:
                     if(ficha!=null)
@@ -199,7 +205,13 @@ public class Tablero_Script : MonoBehaviour
                 fichas[PIniX, PIniY] = null;
                 //Se posiciona la pieza:
                 PosicionarFicha(FichaSelec, PFinX, PFinY);
-                TerminarTurno();
+                FichaSelec = null;
+                PInicial = Vector2.zero;
+                if (!haMatado || (haMatado && !puedeVolverAMatar))
+                {
+                    TerminarTurno();
+                }
+
             }
             else
             {
@@ -233,9 +245,6 @@ public class Tablero_Script : MonoBehaviour
 
     public void TerminarTurno()
     {
-        FichaSelec = null;
-        PInicial = Vector2.zero;
-        Debug.Log(TurnoBlanco.ToString() + " ola");
         if (TurnoBlanco)
         {
             TurnoBlanco = false;
@@ -243,6 +252,71 @@ public class Tablero_Script : MonoBehaviour
         else
         {
             TurnoBlanco = true;
+        }
+    }
+    public void ComprobarSiMataAgain(int PFinX, int PFinY)
+    {
+        if (TurnoBlanco && PFinY <= 5)
+        {
+            if (PFinX < 2 && fichas[PFinX + 1, PFinY + 1] != null)
+            {
+                if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
+            if (PFinX > 5 && fichas[PFinX - 1, PFinY + 1] != null)
+            {
+                if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
+            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY + 1] != null)
+            {
+                if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
+            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY + 1] != null)
+            {
+                if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
+        }
+        if (!TurnoBlanco && PFinY >= 2)
+        {
+            if (PFinX < 2 && fichas[PFinX + 1, PFinY - 1] != null)
+            {
+                if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
+            if (PFinX > 5 && fichas[PFinX - 1, PFinY - 1] != null)
+            {
+                if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
+            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY - 1] != null)
+            {
+                if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
+            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY - 1] != null)
+            {
+                if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                {
+                    puedeVolverAMatar = true;
+                }
+            }
         }
     }
 }
