@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Tablero_Script : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class Tablero_Script : MonoBehaviour
     private float segundos;
     private int minutos;
     private bool movimientoBloqueado;
-    public Text turnoAviso;
+    public TextMeshProUGUI turnoAviso;
 
     private void Start()
     {
