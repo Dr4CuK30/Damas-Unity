@@ -22,9 +22,11 @@ public class Tablero_Script : MonoBehaviour
     private float segundos;
     private int minutos;
     private bool movimientoBloqueado;
+    public Text turnoAviso;
 
     private void Start()
     {
+        turnoAviso.gameObject.SetActive(false);
         movimientoBloqueado = false;
         segundos = 0.0f;
         minutos = 0;
@@ -250,10 +252,12 @@ public class Tablero_Script : MonoBehaviour
     {
         if (TurnoBlanco)
         {
+            turnoAviso.text = "Turno de: \n Player 2";
             TurnoBlanco = false;
         }
         else
         {
+            turnoAviso.text = "Turno de: \n Player 1";
             TurnoBlanco = true;
         }
     }
@@ -336,10 +340,20 @@ public class Tablero_Script : MonoBehaviour
 
     public IEnumerator TerminarTurnoDelay()
     {
+        if (TurnoBlanco)
+        {
+            turnoAviso.text = "Turno de: \n Player 2";
+        }
+        else
+        {
+            turnoAviso.text = "Turno de: \n Player 1";
+        }
+        turnoAviso.gameObject.SetActive(true);
         movimientoBloqueado = true;
         yield return new WaitForSeconds(1);
         TerminarTurno();
         yield return new WaitForSeconds(1);
         movimientoBloqueado = false;
+        turnoAviso.gameObject.SetActive(false);
     }
 }

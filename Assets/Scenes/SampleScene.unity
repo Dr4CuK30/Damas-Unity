@@ -144,6 +144,7 @@ MonoBehaviour:
   FNegraPregab: {fileID: 1160950825322638, guid: 1de520cbfb3bd4beeb18814b3e7a9422, type: 3}
   TurnoBlanco: 0
   contadorTiempo: {fileID: 1296861283}
+  turnoAviso: {fileID: 777140462}
 --- !u!1 &697131194
 GameObject:
   m_ObjectHideFlags: 0
