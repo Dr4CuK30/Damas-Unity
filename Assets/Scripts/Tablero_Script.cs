@@ -24,9 +24,13 @@ public class Tablero_Script : MonoBehaviour
     private int minutos;
     private bool movimientoBloqueado;
     public TextMeshProUGUI turnoAviso;
+    private Ficha obligatorioMatar;
+    private int xobl;
+    private int yobl;
 
     private void Start()
     {
+        obligatorioMatar = null;
         turnoAviso.gameObject.SetActive(false);
         movimientoBloqueado = false;
         segundos = 0.0f;
@@ -41,21 +45,41 @@ public class Tablero_Script : MonoBehaviour
         UpdateMousePos();
         int x = (int)mouseOver.x;
         int y = (int)mouseOver.y;
-
-        if(FichaSelec!=null && movimientoBloqueado == false)
+        if (obligatorioMatar != null)
         {
-            UpdateAgarreFicha(FichaSelec);
-        }
+            if (FichaSelec == obligatorioMatar && movimientoBloqueado == false)
+            {
+                UpdateAgarreFicha(FichaSelec);
+            }
 
-        if(Input.GetMouseButtonDown(0) && movimientoBloqueado == false)
-        {
-            SeleccionarFicha(x, y);
-        }
+            if (Input.GetMouseButtonDown(0) && movimientoBloqueado == false)
+            {
+                SeleccionarFicha(x, y);
+            }
 
-        if(Input.GetMouseButtonUp(0) && movimientoBloqueado == false)
-        {
-            DesplazarFicha((int)PInicial.x,(int)PInicial.y,x,y);
+            if (Input.GetMouseButtonUp(0) && movimientoBloqueado == false)
+            {
+                DesplazarFicha((int)PInicial.x, (int)PInicial.y, x, y);
+            }
         }
+        else
+        {
+            if (FichaSelec != null && movimientoBloqueado == false)
+            {
+                UpdateAgarreFicha(FichaSelec);
+            }
+
+            if (Input.GetMouseButtonDown(0) && movimientoBloqueado == false)
+            {
+                SeleccionarFicha(x, y);
+            }
+
+            if (Input.GetMouseButtonUp(0) && movimientoBloqueado == false)
+            {
+                DesplazarFicha((int)PInicial.x, (int)PInicial.y, x, y);
+            }
+        }
+        
     }
 
     private void UpdateMousePos()
@@ -193,7 +217,7 @@ public class Tablero_Script : MonoBehaviour
                 if(Mathf.Abs(PFinX - PIniX)==2)
                 {
                     haMatado = true;
-                    ComprobarSiMataAgain(PFinX,PFinY);
+                    puedeVolverAMatar = ComprobarSiMata(PFinX,PFinY);
                     Ficha ficha = fichas[(PIniX + PFinX)/2, (PIniY+ PFinY)/2];
                     //Destrucción de la pieza si no es nula:
                     if(ficha!=null)
@@ -261,8 +285,9 @@ public class Tablero_Script : MonoBehaviour
             turnoAviso.text = "Turno de: \n Player 1";
             TurnoBlanco = true;
         }
+        obligatorioMatar = esObligatorioMatar();
     }
-    public void ComprobarSiMataAgain(int PFinX, int PFinY)
+    public bool ComprobarSiMata(int PFinX, int PFinY)
     {
         if (TurnoBlanco && PFinY <= 5)
         {
@@ -270,28 +295,28 @@ public class Tablero_Script : MonoBehaviour
             {
                 if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
             if (PFinX > 5 && fichas[PFinX - 1, PFinY + 1] != null)
             {
                 if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
             if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY + 1] != null)
             {
                 if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
             if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY + 1] != null)
             {
                 if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
         }
@@ -301,31 +326,32 @@ public class Tablero_Script : MonoBehaviour
             {
                 if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
             if (PFinX > 5 && fichas[PFinX - 1, PFinY - 1] != null)
             {
                 if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
             if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY - 1] != null)
             {
                 if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
             if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY - 1] != null)
             {
                 if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
                 {
-                    puedeVolverAMatar = true;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public void contadorUpdate()
@@ -356,5 +382,25 @@ public class Tablero_Script : MonoBehaviour
         yield return new WaitForSeconds(1);
         movimientoBloqueado = false;
         turnoAviso.gameObject.SetActive(false);
+    }
+
+    public Ficha esObligatorioMatar()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (fichas[i,j] != null)
+                {
+                    if (ComprobarSiMata(i, j))
+                    {
+                        xobl = i;
+                        yobl = j;
+                        return fichas[i, j];
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
