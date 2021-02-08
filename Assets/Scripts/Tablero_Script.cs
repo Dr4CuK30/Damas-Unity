@@ -42,7 +42,6 @@ public class Tablero_Script : MonoBehaviour
     {
         contadorUpdate();
         UpdateMousePos();
-        esObligatorioMatar();
         int x = (int)mouseOver.x;
         int y = (int)mouseOver.y;
 
@@ -223,7 +222,7 @@ public class Tablero_Script : MonoBehaviour
                 {
                     StartCoroutine(TerminarTurnoDelay());
                 }
-
+                esObligatorioMatar();
             }
             else
             {
@@ -267,6 +266,7 @@ public class Tablero_Script : MonoBehaviour
             turnoAviso.text = "Turno de: \n Player 1";
             TurnoBlanco = true;
         }
+        esObligatorioMatar();
     }
     public bool ComprobarSiMata(int PFinX, int PFinY)
     {
@@ -375,7 +375,12 @@ public class Tablero_Script : MonoBehaviour
             {
                 if (fichas[i,j] != null)
                 {
-                    if (ComprobarSiMata(i, j))
+                    if (ComprobarSiMata(i, j) && TurnoBlanco && fichas[i,j].FBlanca)
+                    {
+                        xObligatoria.Add(i);
+                        yObligatoria.Add(j);
+                    }
+                    if (ComprobarSiMata(i, j) && !TurnoBlanco && !fichas[i, j].FBlanca)
                     {
                         xObligatoria.Add(i);
                         yObligatoria.Add(j);
