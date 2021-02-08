@@ -24,13 +24,12 @@ public class Tablero_Script : MonoBehaviour
     private int minutos;
     private bool movimientoBloqueado;
     public TextMeshProUGUI turnoAviso;
-    private Ficha obligatorioMatar;
-    private int xobl;
-    private int yobl;
+    public List<int> xObligatoria = new List<int>();
+    public List<int> yObligatoria = new List<int>();
+    public int[] yobl;
 
     private void Start()
     {
-        obligatorioMatar = null;
         turnoAviso.gameObject.SetActive(false);
         movimientoBloqueado = false;
         segundos = 0.0f;
@@ -43,27 +42,10 @@ public class Tablero_Script : MonoBehaviour
     {
         contadorUpdate();
         UpdateMousePos();
+        esObligatorioMatar();
         int x = (int)mouseOver.x;
         int y = (int)mouseOver.y;
-        if (obligatorioMatar != null)
-        {
-            if (FichaSelec == obligatorioMatar && movimientoBloqueado == false)
-            {
-                UpdateAgarreFicha(FichaSelec);
-            }
 
-            if (Input.GetMouseButtonDown(0) && movimientoBloqueado == false)
-            {
-                SeleccionarFicha(x, y);
-            }
-
-            if (Input.GetMouseButtonUp(0) && movimientoBloqueado == false)
-            {
-                DesplazarFicha((int)PInicial.x, (int)PInicial.y, x, y);
-            }
-        }
-        else
-        {
             if (FichaSelec != null && movimientoBloqueado == false)
             {
                 UpdateAgarreFicha(FichaSelec);
@@ -77,8 +59,8 @@ public class Tablero_Script : MonoBehaviour
             if (Input.GetMouseButtonUp(0) && movimientoBloqueado == false)
             {
                 DesplazarFicha((int)PInicial.x, (int)PInicial.y, x, y);
+            
             }
-        }
         
     }
 
@@ -209,7 +191,7 @@ public class Tablero_Script : MonoBehaviour
             }
 
             //Validar desplazamiento según las reglas(En diagonal):
-            if(FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY))
+            if((FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY) && xObligatoria.Count == 0) || FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY,xObligatoria,yObligatoria))
             {
                 Debug.Log(FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY));
                 //Validación para confirmar si fue un movimiento de asesinato o no:
@@ -285,7 +267,6 @@ public class Tablero_Script : MonoBehaviour
             turnoAviso.text = "Turno de: \n Player 1";
             TurnoBlanco = true;
         }
-        obligatorioMatar = esObligatorioMatar();
     }
     public bool ComprobarSiMata(int PFinX, int PFinY)
     {
@@ -384,8 +365,10 @@ public class Tablero_Script : MonoBehaviour
         turnoAviso.gameObject.SetActive(false);
     }
 
-    public Ficha esObligatorioMatar()
+    public void esObligatorioMatar()
     {
+        xObligatoria.Clear();
+        yObligatoria.Clear();
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -394,13 +377,11 @@ public class Tablero_Script : MonoBehaviour
                 {
                     if (ComprobarSiMata(i, j))
                     {
-                        xobl = i;
-                        yobl = j;
-                        return fichas[i, j];
+                        xObligatoria.Add(i);
+                        yObligatoria.Add(j);
                     }
                 }
             }
         }
-        return null;
     }
 }
