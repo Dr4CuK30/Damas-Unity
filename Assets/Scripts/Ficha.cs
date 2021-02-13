@@ -10,6 +10,7 @@ public class Ficha : MonoBehaviour
 
     public bool ValidarMovimiento(Ficha[,] fichas, int xinicial, int yinicial, int xfinal, int yfinal)
     {
+        //Debug.Log("No Matanza Obl");
         //Validar que se está moviendo sobre una ficha (Asesinato):
         //1) No es posible moverse encima de una ficha:
         if (fichas[xfinal, yfinal] != null)
@@ -124,6 +125,17 @@ public class Ficha : MonoBehaviour
                     return true;
                 }
             }
+            if (deltaX == 2 && deltaY == -2 && FReina)
+            {
+                //Se obtiene la ficha que supuestamente fue asesinada por el desplazamiento de la ficha movida:
+                Ficha ficha = fichas[(xinicial + xfinal) / 2, (yinicial + yfinal) / 2];
+
+                //Valida que la ficha saltada de verdad exista y que no sea una ficha del mismo equipo
+                if (ficha != null && !ficha.FBlanca)
+                {
+                    return true;
+                }
+            }
         }
 
         //Se valida si la ficha es reina o negra:
@@ -144,6 +156,19 @@ public class Ficha : MonoBehaviour
             {
                 if (deltaY == -2)
                 {
+                    //Se obtiene la ficha que supuestamente fue asesinada por el desplazamiento de la ficha movida:
+                    Ficha ficha = fichas[(xinicial + xfinal) / 2, (yinicial + yfinal) / 2];
+
+                    //Valida que la ficha saltada de verdad exista y que no sea una ficha del mismo equipo
+                    if (ficha != null && ficha.FBlanca)
+                    {
+                        return true;
+                    }
+                }
+
+                if(deltaY == 2 && FReina)
+                {
+                    Debug.Log("Matanza Obl" + xobl[0] + yobl[0]);
                     //Se obtiene la ficha que supuestamente fue asesinada por el desplazamiento de la ficha movida:
                     Ficha ficha = fichas[(xinicial + xfinal) / 2, (yinicial + yfinal) / 2];
 

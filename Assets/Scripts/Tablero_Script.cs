@@ -19,7 +19,7 @@ public class Tablero_Script : MonoBehaviour
     private bool haMatado;
     private bool puedeVolverAMatar;
     
-    public Text contadorTiempo;
+    public TextMeshProUGUI contadorTiempo;
     private float segundos;
     private int minutos;
     private bool movimientoBloqueado;
@@ -201,13 +201,13 @@ public class Tablero_Script : MonoBehaviour
             //Validar desplazamiento según las reglas(En diagonal):
             if((FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY) && xObligatoria.Count == 0) || FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY,xObligatoria,yObligatoria))
             {
-                Debug.Log(FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY));
+                //Debug.Log(FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY));
                 //Validación para confirmar si fue un movimiento de asesinato o no:
                 //(Siendo un salto de dos posiciones)
                 if(Mathf.Abs(PFinX - PIniX)==2)
                 {
                     haMatado = true;
-                    puedeVolverAMatar = ComprobarSiMata(PFinX,PFinY);
+                    puedeVolverAMatar = ComprobarSiMata(PFinX,PFinY, FichaSelec.FReina);
                     Ficha ficha = fichas[(PIniX + PFinX)/2, (PIniY+ PFinY)/2];
                     //Destrucción de la pieza si no es nula:
                     if(ficha!=null)
@@ -226,6 +226,7 @@ public class Tablero_Script : MonoBehaviour
                 //Se posiciona la pieza:
                 PosicionarFicha(FichaSelec, PFinX, PFinY);
 
+                //Transformación de la ficha en reina de ser el caso
                 if (FichaSelec.FBlanca && !FichaSelec.FReina && PFinY == 7)
                 {
                     FichaSelec.FReina = true;
@@ -280,77 +281,147 @@ public class Tablero_Script : MonoBehaviour
     {
         if (TurnoBlanco)
         {
-            turnoAviso.text = "Turno de: \n Player 2";
+            //turnoAviso.text = "Turno de: \n Player 2";
             TurnoBlanco = false;
         }
         else
         {
-            turnoAviso.text = "Turno de: \n Player 1";
+            //turnoAviso.text = "Turno de: \n Player 1";
             TurnoBlanco = true;
         }
         esObligatorioMatar();
     }
-    public bool ComprobarSiMata(int PFinX, int PFinY)
+    public bool ComprobarSiMata(int PFinX, int PFinY, bool esReina)
     {
-        if (TurnoBlanco && PFinY <= 5)
+        if(TurnoBlanco)
         {
-            if (PFinX < 2 && fichas[PFinX + 1, PFinY + 1] != null)
+            if (PFinY <= 5)
             {
-                if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                if (PFinX < 2 && fichas[PFinX + 1, PFinY + 1] != null)
                 {
-                    return true;
+                    if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX > 5 && fichas[PFinX - 1, PFinY + 1] != null)
+                {
+                    if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY + 1] != null)
+                {
+                    if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY + 1] != null)
+                {
+                    if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
                 }
             }
-            if (PFinX > 5 && fichas[PFinX - 1, PFinY + 1] != null)
+
+            if (esReina && PFinY >= 2)
             {
-                if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                if (PFinX < 2 && fichas[PFinX + 1, PFinY - 1] != null)
                 {
-                    return true;
+                    if (!fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
                 }
-            }
-            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY + 1] != null)
-            {
-                if (!fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                if (PFinX > 5 && fichas[PFinX - 1, PFinY - 1] != null)
                 {
-                    return true;
+                    if (!fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
                 }
-            }
-            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY + 1] != null)
-            {
-                if (!fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY - 1] != null)
                 {
-                    return true;
+                    if (!fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY - 1] != null)
+                {
+                    if (!fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
                 }
             }
         }
-        if (!TurnoBlanco && PFinY >= 2)
+        
+        if(!TurnoBlanco)
         {
-            if (PFinX < 2 && fichas[PFinX + 1, PFinY - 1] != null)
+            if (PFinY >= 2)
             {
-                if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                if (PFinX < 2 && fichas[PFinX + 1, PFinY - 1] != null)
                 {
-                    return true;
+                    if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX > 5 && fichas[PFinX - 1, PFinY - 1] != null)
+                {
+                    if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY - 1] != null)
+                {
+                    if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY - 1] != null)
+                {
+                    if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                    {
+                        return true;
+                    }
                 }
             }
-            if (PFinX > 5 && fichas[PFinX - 1, PFinY - 1] != null)
+            if (esReina && PFinY <= 5)
             {
-                if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                if (PFinX < 2 && fichas[PFinX + 1, PFinY + 1] != null)
                 {
-                    return true;
+                    if (fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
                 }
-            }
-            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY - 1] != null)
-            {
-                if (fichas[PFinX - 1, PFinY - 1].FBlanca && fichas[PFinX - 2, PFinY - 2] == null)
+                if (PFinX > 5 && fichas[PFinX - 1, PFinY + 1] != null)
                 {
-                    return true;
+                    if (fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
                 }
-            }
-            if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY - 1] != null)
-            {
-                if (fichas[PFinX + 1, PFinY - 1].FBlanca && fichas[PFinX + 2, PFinY - 2] == null)
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX - 1, PFinY + 1] != null)
                 {
-                    return true;
+                    if (fichas[PFinX - 1, PFinY + 1].FBlanca && fichas[PFinX - 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
+                }
+                if (PFinX >= 2 && PFinX <= 5 && fichas[PFinX + 1, PFinY + 1] != null)
+                {
+                    if (fichas[PFinX + 1, PFinY + 1].FBlanca && fichas[PFinX + 2, PFinY + 2] == null)
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -397,12 +468,12 @@ public class Tablero_Script : MonoBehaviour
             {
                 if (fichas[i,j] != null)
                 {
-                    if (ComprobarSiMata(i, j) && TurnoBlanco && fichas[i,j].FBlanca)
+                    if (ComprobarSiMata(i, j, fichas[i, j].FReina) && TurnoBlanco && fichas[i,j].FBlanca)
                     {
                         xObligatoria.Add(i);
                         yObligatoria.Add(j);
                     }
-                    if (ComprobarSiMata(i, j) && !TurnoBlanco && !fichas[i, j].FBlanca)
+                    if (ComprobarSiMata(i, j, fichas[i, j].FReina) && !TurnoBlanco && !fichas[i, j].FBlanca)
                     {
                         xObligatoria.Add(i);
                         yObligatoria.Add(j);
@@ -411,4 +482,6 @@ public class Tablero_Script : MonoBehaviour
             }
         }
     }
+
+
 }

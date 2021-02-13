@@ -281,6 +281,9 @@ MonoBehaviour:
   TurnoBlanco: 0
   contadorTiempo: {fileID: 1296861283}
   turnoAviso: {fileID: 246426245}
+  xObligatoria: 
+  yObligatoria: 
+  yobl: 
 --- !u!1 &697131194
 GameObject:
   m_ObjectHideFlags: 0
