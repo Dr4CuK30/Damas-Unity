@@ -122,6 +122,16 @@ public class Tablero_Script : MonoBehaviour
         piezaPre.transform.SetParent(transform);
         //Obtiene el Primer Componente de Tipo Ficha del GameObject piezaPre (Asigna el clon como ficha)
         Ficha ficha = piezaPre.GetComponent<Ficha>();
+        if (ficha.FBlanca)
+        {
+            ficha.transform.Rotate(Vector3.forward * -150);
+            ficha.transform.Rotate(Vector3.right * 180);
+        }
+        else
+        {
+            ficha.transform.Rotate(Vector3.forward * 120);
+            ficha.transform.Rotate(Vector3.right * 180);
+        }
         fichas[x,y] = ficha;
         //Desplaza a la ficha cierta distancia al momento de crearla:
         PosicionarFicha(ficha,x,y);
@@ -130,7 +140,6 @@ public class Tablero_Script : MonoBehaviour
     public void PosicionarFicha(Ficha ficha, int x, int y)
     {
         ficha.transform.position = (Vector3.right * x) + (Vector3.forward * y);
-        Debug.Log((Vector3.right * x) + (Vector3.forward * y));
     }
 
     public void SeleccionarFicha(int x, int y)
@@ -216,6 +225,19 @@ public class Tablero_Script : MonoBehaviour
                 fichas[PIniX, PIniY] = null;
                 //Se posiciona la pieza:
                 PosicionarFicha(FichaSelec, PFinX, PFinY);
+
+                if (FichaSelec.FBlanca && !FichaSelec.FReina && PFinY == 7)
+                {
+                    FichaSelec.FReina = true;
+                    FichaSelec.transform.Rotate(Vector3.right*180);
+                }
+
+                if (!FichaSelec.FBlanca && !FichaSelec.FReina && PFinY == 0)
+                {
+                    FichaSelec.FReina = true;
+                    FichaSelec.transform.Rotate(Vector3.right * 180);
+                }
+
                 FichaSelec = null;
                 PInicial = Vector2.zero;
                 if (!haMatado || (haMatado && !puedeVolverAMatar))
