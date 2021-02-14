@@ -6,9 +6,11 @@ using TMPro;
 
 public class Tablero_Script : MonoBehaviour
 {
+    [SerializeField]
+    private ConcretFactory concretFactory;
     public Ficha[,] fichas = new Ficha[8,8];
     public GameObject FBlancaPrefab;
-    public GameObject FNegraPregab;
+    public GameObject FNegraPrefab;
     private Vector2 mouseOver;
     public bool TurnoBlanco;
     private Vector2 OffsetRaycast = new Vector2(0.510f, 0.510f);
@@ -108,7 +110,7 @@ public class Tablero_Script : MonoBehaviour
             for (int columna = 0; columna < 8; columna += 2)
             {
                 //Crear Piezas
-                GenerarPieza((fila % 2 == 0) ? columna : columna + 1, fila, FNegraPregab);
+                GenerarPieza((fila % 2 == 0) ? columna : columna + 1, fila, FNegraPrefab);
             }
         }
     }
@@ -116,7 +118,13 @@ public class Tablero_Script : MonoBehaviour
     public void GenerarPieza(int x, int y, GameObject prefab)
     {
         //Creación de "clones" de la ficha:
-        GameObject piezaPre = Instantiate(prefab) as GameObject;
+        //Aquí se aplica el patrón prototype por cuenta de Unity, no es necesario implementarlo desde 0
+        //GameObject piezaPre = Instantiate(prefab) as GameObject;
+
+        //Aplicación del patrón factory;
+        concretFactory.FPrefab = prefab;
+        GameObject piezaPre = concretFactory.ObtenerInstancia();
+
         //Accede a la propiedad Transform del GameObject pierzaPre, y define al padre de dicha propiedad como transform
         //Esto para que las piezas sean hijas del tablero
         piezaPre.transform.SetParent(transform);

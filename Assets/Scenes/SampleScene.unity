@@ -276,8 +276,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2697e54753dd734495d6e806eee6a0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  concretFactory: {fileID: 2625337615159963862, guid: f8d7fab8004118248938d6d56a77205f, type: 3}
   FBlancaPrefab: {fileID: 1394539701257498, guid: 74d0e4d5c5a534d2086a79c6ae356f1b, type: 3}
-  FNegraPregab: {fileID: 1160950825322638, guid: 1de520cbfb3bd4beeb18814b3e7a9422, type: 3}
+  FNegraPrefab: {fileID: 1160950825322638, guid: 1de520cbfb3bd4beeb18814b3e7a9422, type: 3}
   TurnoBlanco: 0
   contadorTiempo: {fileID: 665200500}
   turnoAviso: {fileID: 246426245}

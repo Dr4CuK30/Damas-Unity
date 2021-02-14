@@ -7,7 +7,6 @@ public class Ficha : MonoBehaviour
     public bool FBlanca;
     public bool FReina;
 
-
     public bool ValidarMovimiento(Ficha[,] fichas, int xinicial, int yinicial, int xfinal, int yfinal)
     {
         //Debug.Log("No Matanza Obl");
