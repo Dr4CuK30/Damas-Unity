@@ -15,6 +15,9 @@ public class Tablero_Script : MonoBehaviour
     public bool TurnoBlanco;
     private Vector2 OffsetRaycast = new Vector2(0.510f, 0.510f);
 
+    private bool victoriaBlanca;
+    private bool victoriaNegra;
+
     private Vector2 PInicial;
     private Vector2 PFinal;
     private Ficha FichaSelec;
@@ -42,10 +45,12 @@ public class Tablero_Script : MonoBehaviour
 
     private void Update()
     {
-        contadorUpdate();
-        UpdateMousePos();
-        int x = (int)mouseOver.x;
-        int y = (int)mouseOver.y;
+        if(!victoriaBlanca && !victoriaNegra)
+        {
+            contadorUpdate();
+            UpdateMousePos();
+            int x = (int)mouseOver.x;
+            int y = (int)mouseOver.y;
 
             if (FichaSelec != null && movimientoBloqueado == false)
             {
@@ -60,9 +65,8 @@ public class Tablero_Script : MonoBehaviour
             if (Input.GetMouseButtonUp(0) && movimientoBloqueado == false)
             {
                 DesplazarFicha((int)PInicial.x, (int)PInicial.y, x, y);
-            
             }
-        
+        }
     }
 
     private void UpdateMousePos()
@@ -463,6 +467,19 @@ public class Tablero_Script : MonoBehaviour
         TerminarTurno();
         yield return new WaitForSeconds(1);
         movimientoBloqueado = false;
+        //Revisar si alguien ya ganó:
+        comprobarVictoria();
+
+        if (victoriaBlanca)
+        {
+            Debug.Log("Equipo Blanco Ganó");
+        }
+
+        if(victoriaNegra)
+        {
+            Debug.Log("Equipo Negro Ganó");
+        }
+
         turnoAviso.gameObject.SetActive(false);
     }
 
@@ -491,5 +508,32 @@ public class Tablero_Script : MonoBehaviour
         }
     }
 
+    public void comprobarVictoria()
+    {
+        bool quedanBlancas=false;
+        bool quedanNegras=false;
 
+        var fichasRestantes = FindObjectsOfType<Ficha>();
+        for(int i=0;i<fichasRestantes.Length;i++)
+        {
+            if(fichasRestantes[i].FBlanca)
+            {
+                quedanBlancas = true;
+            }
+            else
+            {
+                quedanNegras = true;
+            }
+        }
+
+        if(!quedanBlancas)
+        {
+            victoriaNegra = true;
+        }
+
+        if(!quedanNegras)
+        {
+            victoriaBlanca = true;
+        }
+    }
 }
