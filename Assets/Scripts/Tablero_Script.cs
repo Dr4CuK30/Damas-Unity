@@ -32,6 +32,7 @@ public class Tablero_Script : MonoBehaviour
     public List<int> xObligatoria = new List<int>();
     public List<int> yObligatoria = new List<int>();
     public int[] yobl;
+    public State cam;
 
     private void Start()
     {
@@ -295,12 +296,15 @@ public class Tablero_Script : MonoBehaviour
         {
             //turnoAviso.text = "Turno de: \n Player 2";
             TurnoBlanco = false;
+            setCam(new CameraP2());
         }
         else
         {
             //turnoAviso.text = "Turno de: \n Player 1";
             TurnoBlanco = true;
+            setCam(new CameraP1());
         }
+        //cam.changeCamera();
         esObligatorioMatar();
     }
     public bool ComprobarSiMata(int PFinX, int PFinY, bool esReina)
@@ -535,5 +539,10 @@ public class Tablero_Script : MonoBehaviour
         {
             victoriaBlanca = true;
         }
+    }
+
+    public void setCam(State x)
+    {
+        this.cam = x;
     }
 }
