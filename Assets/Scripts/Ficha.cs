@@ -6,6 +6,7 @@ public class Ficha : MonoBehaviour
 {
     public bool FBlanca;
     public bool FReina;
+    public Observer[] observadores;
 
     public bool ValidarMovimiento(Ficha[,] fichas, int xinicial, int yinicial, int xfinal, int yfinal)
     {
