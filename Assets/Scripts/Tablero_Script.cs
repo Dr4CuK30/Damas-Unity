@@ -457,34 +457,33 @@ public class Tablero_Script : MonoBehaviour
 
     public IEnumerator TerminarTurnoDelay()
     {
-        if (TurnoBlanco)
+        comprobarVictoria();
+        if (TurnoBlanco && !victoriaBlanca && !victoriaNegra)
         {
             turnoAviso.text = "Turno de: \n Player 2";
         }
-        else
+        else if(!TurnoBlanco && !victoriaBlanca && !victoriaNegra)
         {
             turnoAviso.text = "Turno de: \n Player 1";
+        }else if (victoriaBlanca)
+        {
+            turnoAviso.SetText("Player 1 \n Ha ganado");
+        }
+        else if (victoriaNegra)
+        {
+            turnoAviso.SetText("Player 2 \n Ha ganado");
         }
         turnoAviso.gameObject.SetActive(true);
         movimientoBloqueado = true;
-        yield return new WaitForSeconds(1);
-        TerminarTurno();
-        yield return new WaitForSeconds(1);
-        movimientoBloqueado = false;
-        //Revisar si alguien ya ganó:
-        comprobarVictoria();
 
-        if (victoriaBlanca)
+        if(!victoriaBlanca && !victoriaNegra)
         {
-            Debug.Log("Equipo Blanco Ganó");
+            yield return new WaitForSeconds(1);
+            TerminarTurno();
+            yield return new WaitForSeconds(1);
+            movimientoBloqueado = false;
+            turnoAviso.gameObject.SetActive(false);
         }
-
-        if(victoriaNegra)
-        {
-            Debug.Log("Equipo Negro Ganó");
-        }
-
-        turnoAviso.gameObject.SetActive(false);
     }
 
     public void esObligatorioMatar()
@@ -533,6 +532,7 @@ public class Tablero_Script : MonoBehaviour
         if(!quedanBlancas)
         {
             victoriaNegra = true;
+           
         }
 
         if(!quedanNegras)
