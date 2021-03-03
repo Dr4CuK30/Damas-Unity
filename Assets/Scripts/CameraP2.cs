@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class CameraP2 : State
 {
-    //private Camera_Controler cam;
+    private Camera_Controler cam;
     public void changeCamera()
     {
-        //cam.currentView = cam.views[1];
+        cam.currentView = cam.views[1];
     }
 }
