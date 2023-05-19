@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 public class Tablero_Script : MonoBehaviour
 {
     [SerializeField]
     private ConcretFactory concretFactory;
-    public Ficha[,] fichas = new Ficha[8,8];
+    public Ficha[,] fichas = new Ficha[8, 8];
     public GameObject FBlancaPrefab;
     public GameObject FNegraPrefab;
     private Vector2 mouseOver;
@@ -23,7 +25,7 @@ public class Tablero_Script : MonoBehaviour
     private Ficha FichaSelec;
     private bool haMatado;
     private bool puedeVolverAMatar;
-    
+
     public TextMeshProUGUI contadorTiempo;
     private float segundos;
     private int minutos;
@@ -33,20 +35,22 @@ public class Tablero_Script : MonoBehaviour
     public List<int> yObligatoria = new List<int>();
     public int[] yobl;
     public State cam;
+    public string localPlayer = "Player 1";
 
     private void Start()
     {
+        StartCoroutine(GetUserData());
         turnoAviso.gameObject.SetActive(false);
         movimientoBloqueado = false;
         segundos = 0.0f;
         minutos = 0;
         TurnoBlanco = true;
-        GenerarTablero(); 
+        GenerarTablero();
     }
 
     private void Update()
     {
-        if(!victoriaBlanca && !victoriaNegra)
+        if (!victoriaBlanca && !victoriaNegra)
         {
             contadorUpdate();
             UpdateMousePos();
@@ -73,7 +77,7 @@ public class Tablero_Script : MonoBehaviour
     private void UpdateMousePos()
     {
         //Validación para verificar que existe una cámara (en caso de borrarla o cambiarla)
-        if(!Camera.main)
+        if (!Camera.main)
         {
             Debug.Log("Cámara no encontrada");
         }
@@ -97,15 +101,39 @@ public class Tablero_Script : MonoBehaviour
         }
     }
 
+    IEnumerator GetUserData()
+    {
+        string headerKey = "Authorization";
+        string headerValue = "Bearer " + PlayerPrefs.GetString("Token");
+        UnityWebRequest www = UnityWebRequest.Get("http://localhost:3000/user");
+        www.SetRequestHeader(headerKey, headerValue);
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            string jsonResponse = www.downloadHandler.text;
+            Debug.Log(jsonResponse);
+            GetUserResponse res = JsonConvert.DeserializeObject<GetUserResponse>(jsonResponse);
+            PlayerPrefs.SetString("username", res.username);
+            PlayerPrefs.SetString("id", res.id);
+            localPlayer = res.username;
+
+        }
+        else
+        {
+            Debug.Log("Error al hacer la petición: " + www.error);
+        }
+    }
+
     public void GenerarTablero()
     {
         //Lado Blanco:
-        for(int fila = 0; fila < 3; fila++)
+        for (int fila = 0; fila < 3; fila++)
         {
-            for(int columna = 0; columna < 8; columna+=2)
+            for (int columna = 0; columna < 8; columna += 2)
             {
                 //Crear Piezas
-                GenerarPieza((fila%2==0)?columna:columna+1,fila, FBlancaPrefab);
+                GenerarPieza((fila % 2 == 0) ? columna : columna + 1, fila, FBlancaPrefab);
             }
         }
 
@@ -145,9 +173,9 @@ public class Tablero_Script : MonoBehaviour
             ficha.transform.Rotate(Vector3.forward * 120);
             ficha.transform.Rotate(Vector3.right * 180);
         }
-        fichas[x,y] = ficha;
+        fichas[x, y] = ficha;
         //Desplaza a la ficha cierta distancia al momento de crearla:
-        PosicionarFicha(ficha,x,y);
+        PosicionarFicha(ficha, x, y);
     }
 
     public void PosicionarFicha(Ficha ficha, int x, int y)
@@ -159,16 +187,16 @@ public class Tablero_Script : MonoBehaviour
     {
         //En caso de pulsar fuera de los límites del tablero:
 
-        if(x<0 || x>=fichas.Length || y<0 || y>=fichas.Length)
+        if (x < 0 || x >= fichas.Length || y < 0 || y >= fichas.Length)
         {
             return;
         }
 
         //Se obtiene la ficha seleccionada del arreglo de fichas del tablero:
         Ficha ficha = fichas[x, y];
-        if(ficha!=null)
+        if (ficha != null)
         {
-            if((ficha.FBlanca && TurnoBlanco) || (!ficha.FBlanca && !TurnoBlanco))
+            if ((ficha.FBlanca && TurnoBlanco) || (!ficha.FBlanca && !TurnoBlanco))
             {
                 FichaSelec = ficha;
                 PInicial = mouseOver;
@@ -182,16 +210,16 @@ public class Tablero_Script : MonoBehaviour
         haMatado = false;
         puedeVolverAMatar = false;
         PInicial = new Vector2(PIniX, PIniY);
-        PFinal = new Vector2(PFinX,PFinY);
+        PFinal = new Vector2(PFinX, PFinY);
         //FichaSelec = fichas[PIniX,PIniY];
 
         //Condicional para evitar que se tome una posición fuera del tablero, tanto para tomar lo ficha como para dejarla:
-        if(PFinX<0 || PFinX> fichas.Length || PFinY < 0 || PFinY > fichas.Length)
+        if (PFinX < 0 || PFinX > fichas.Length || PFinY < 0 || PFinY > fichas.Length)
         {
-            if(FichaSelec!=null)
+            if (FichaSelec != null)
             {
                 //En caso de que se tenga un ficha seleccionada y se suelte en una posición incorrecta, será devuelta a su posición inicial:
-                PosicionarFicha(FichaSelec,PIniX,PIniY);
+                PosicionarFicha(FichaSelec, PIniX, PIniY);
             }
 
             PInicial = Vector2.zero;
@@ -200,11 +228,11 @@ public class Tablero_Script : MonoBehaviour
         }
 
         //Validación en caso de cancelar el movimiento (Seleccionar la misma casilla como posición final e inicial.)
-        if(FichaSelec!=null)
+        if (FichaSelec != null)
         {
-            if(PFinal==PInicial)
+            if (PFinal == PInicial)
             {
-                PosicionarFicha(FichaSelec,PIniX,PIniY);
+                PosicionarFicha(FichaSelec, PIniX, PIniY);
 
                 PInicial = Vector2.zero;
                 FichaSelec = null;
@@ -212,25 +240,25 @@ public class Tablero_Script : MonoBehaviour
             }
 
             //Validar desplazamiento según las reglas(En diagonal):
-            if((FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY) && xObligatoria.Count == 0) || FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY,xObligatoria,yObligatoria))
+            if ((FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY) && xObligatoria.Count == 0) || FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY, xObligatoria, yObligatoria))
             {
                 //Debug.Log(FichaSelec.ValidarMovimiento(fichas, PIniX, PIniY, PFinX, PFinY));
                 //Validación para confirmar si fue un movimiento de asesinato o no:
                 //(Siendo un salto de dos posiciones)
-                if(Mathf.Abs(PFinX - PIniX)==2)
+                if (Mathf.Abs(PFinX - PIniX) == 2)
                 {
                     haMatado = true;
-                    puedeVolverAMatar = ComprobarSiMata(PFinX,PFinY, FichaSelec.FReina);
-                    Ficha ficha = fichas[(PIniX + PFinX)/2, (PIniY+ PFinY)/2];
+                    puedeVolverAMatar = ComprobarSiMata(PFinX, PFinY, FichaSelec.FReina);
+                    Ficha ficha = fichas[(PIniX + PFinX) / 2, (PIniY + PFinY) / 2];
                     //Destrucción de la pieza si no es nula:
-                    if(ficha!=null)
+                    if (ficha != null)
                     {
                         //Elimina la ficha del tablero
                         fichas[(PIniX + PFinX) / 2, (PIniY + PFinY) / 2] = null;
                         //Destruye la ficha:
                         Destroy(ficha.gameObject);
                     }
-                    
+
                 }
                 //Se define la nueva posición de la ficha en el tablero
                 fichas[PFinX, PFinY] = FichaSelec;
@@ -243,7 +271,7 @@ public class Tablero_Script : MonoBehaviour
                 if (FichaSelec.FBlanca && !FichaSelec.FReina && PFinY == 7)
                 {
                     FichaSelec.FReina = true;
-                    FichaSelec.transform.Rotate(Vector3.right*180);
+                    FichaSelec.transform.Rotate(Vector3.right * 180);
                 }
 
                 if (!FichaSelec.FBlanca && !FichaSelec.FReina && PFinY == 0)
@@ -309,7 +337,7 @@ public class Tablero_Script : MonoBehaviour
     }
     public bool ComprobarSiMata(int PFinX, int PFinY, bool esReina)
     {
-        if(TurnoBlanco)
+        if (TurnoBlanco)
         {
             if (PFinY <= 5)
             {
@@ -375,8 +403,8 @@ public class Tablero_Script : MonoBehaviour
                 }
             }
         }
-        
-        if(!TurnoBlanco)
+
+        if (!TurnoBlanco)
         {
             if (PFinY >= 2)
             {
@@ -462,12 +490,12 @@ public class Tablero_Script : MonoBehaviour
         {
             turnoAviso.text = "Turno de: \n Player 2";
         }
-        else if(!TurnoBlanco && !victoriaBlanca && !victoriaNegra)
+        else if (!TurnoBlanco && !victoriaBlanca && !victoriaNegra)
         {
-            turnoAviso.text = "Turno de: \n Player 1";
-        }else if (victoriaBlanca)
+            turnoAviso.text = "Turno de: \n " + localPlayer;
+        } else if (victoriaBlanca)
         {
-            turnoAviso.SetText("Player 1 \n Ha ganado");
+            turnoAviso.SetText(localPlayer + " \n Ha ganado");
         }
         else if (victoriaNegra)
         {
@@ -476,7 +504,7 @@ public class Tablero_Script : MonoBehaviour
         turnoAviso.gameObject.SetActive(true);
         movimientoBloqueado = true;
 
-        if(!victoriaBlanca && !victoriaNegra)
+        if (!victoriaBlanca && !victoriaNegra)
         {
             yield return new WaitForSeconds(1);
             TerminarTurno();
@@ -494,9 +522,9 @@ public class Tablero_Script : MonoBehaviour
         {
             for (int j = 0; j < 8; j++)
             {
-                if (fichas[i,j] != null)
+                if (fichas[i, j] != null)
                 {
-                    if (ComprobarSiMata(i, j, fichas[i, j].FReina) && TurnoBlanco && fichas[i,j].FBlanca)
+                    if (ComprobarSiMata(i, j, fichas[i, j].FReina) && TurnoBlanco && fichas[i, j].FBlanca)
                     {
                         xObligatoria.Add(i);
                         yObligatoria.Add(j);
@@ -513,13 +541,13 @@ public class Tablero_Script : MonoBehaviour
 
     public void comprobarVictoria()
     {
-        bool quedanBlancas=false;
-        bool quedanNegras=false;
+        bool quedanBlancas = false;
+        bool quedanNegras = false;
 
         var fichasRestantes = FindObjectsOfType<Ficha>();
-        for(int i=0;i<fichasRestantes.Length;i++)
+        for (int i = 0; i < fichasRestantes.Length; i++)
         {
-            if(fichasRestantes[i].FBlanca)
+            if (fichasRestantes[i].FBlanca)
             {
                 quedanBlancas = true;
             }
@@ -529,13 +557,13 @@ public class Tablero_Script : MonoBehaviour
             }
         }
 
-        if(!quedanBlancas)
+        if (!quedanBlancas)
         {
             victoriaNegra = true;
-           
+
         }
 
-        if(!quedanNegras)
+        if (!quedanNegras)
         {
             victoriaBlanca = true;
         }
@@ -544,5 +572,13 @@ public class Tablero_Script : MonoBehaviour
     public void setCam(State x)
     {
         this.cam = x;
+    }
+
+    public class GetUserResponse
+    {
+        public string username { get; set; }
+        public string id { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
     }
 }
